@@ -1,0 +1,24 @@
+# Abrir el archivo CSV
+open 1, "datos.csv"
+
+# Definir un arreglo dinámico de texto para almacenar las columnas de cada línea
+dim datos$(1)
+
+while not eof(1)
+    linea$ = readline(1)
+    
+    # explode() divide la linea$ usando la "," y guarda los trozos en datos$
+    datos$ = explode(linea$, ",")
+    
+    # Ahora puedes acceder a cada columna usando índices (empezando en 0)
+    ID$ = datos$[0]
+    ESTACION$   = datos$[1]
+    TEMPERATURA$   = datos$[2]
+     PRECIPITACION$   = datos$[3]
+      VIENTO$   = datos$[4]
+       BATERIA$   = datos$[5]
+       
+  print "id: " + ID$ + " | estacion: " + ESTACION$ + " | temperatura: " + TEMPERATURA$  + " | precipitacion: " +   PRECIPITACION$ + " | viento: " + VIENTO$ + " | bateria: " +  BATERIA$ 
+end while
+
+close 1
