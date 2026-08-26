@@ -53,8 +53,30 @@ La fila que pasa se escribe exactamente igual a como llegó.
 
 ---
 
-## Pendiente de definir (próximas etapas)
+## 3. metrics.csv (Fortran → Java)
 
-- [ ] metrics.csv (Fortran → Java)
-- [ ] alerts.csv (Java → MIPS)
-- [ ] Formato de resultado final (MIPS)
+**Ruta:** `data/middle/metrics.csv`
+**Generado por:** Etapa 2 (Fortran)
+**Consumido por:** Etapa 3 (Java)
+
+**Formato:** clave-valor (NO es una fila por estación — es un resumen
+global de todo el archivo `norm_data.csv` junto).
+
+**Columnas:** `Metric,Value`
+**¿Incluye encabezado?** Sí, primera línea = `Metric,Value`
+**Separador:** coma (`,`)
+
+**Claves esperadas (deben aparecer exactamente con estos nombres):**
+
+| Clave (`Metric`)          | Descripción                              |
+|----------------------------|-------------------------------------------|
+| `Total_Processed_Records`  | Cantidad de filas válidas procesadas      |
+| `Total_Precipitation`      | Precipitación acumulada (mm)              |
+| `Average_Temperature`      | Temperatura promedio (°C)                 |
+| `Max_Temperature`          | Temperatura máxima (°C)                   |
+| `Min_Temperature`          | Temperatura mínima (°C)                   |
+| `Average_Wind_Speed`       | Viento promedio (km/h)                    |
+| `Max_Wind_Speed`           | Viento máximo (km/h)                      |
+| `Average_Battery_Level`    | Batería promedio (%)                      |
+
+**Ejemplo real:**
