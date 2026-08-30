@@ -67,7 +67,6 @@ while not eof(1)
        writeline(2, currentLine$)
     end if
        
-    print "id: " + stationId$ + " | estacion: " + stationName$ + " | temperatura: " + temperature$ +       " | precipitacion: " + precipitation$ + " | viento: " + windSpeed$ + " | bateria: " + batteryLevel$ 
 end while
 
 close 1
