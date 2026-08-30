@@ -7,6 +7,9 @@
 #   checksum = checksum XOR posicion
 #
 # Valores: TEMP_ALTA=10  LLUVIA_INTENSA=20  VIENTO_FUERTE=30  BATERIA_BAJA=40
+#
+# Entrada:  data/middle/alerts.csv
+# Salida:   data/output/final_result.txt (un solo numero: el checksum)
 # ============================================================
 
 .data
@@ -31,6 +34,22 @@
 .text
 .globl main
 
+# ------------------------------------------------------------
+# Rutina: main
+# Descripcion: punto de entrada. Abre alerts.csv, lee todo su
+#              contenido a memoria, y recorre el buffer linea
+#              por linea acumulando el checksum.
+# Entrada:  ninguna (usa las rutas fijas en .data)
+# Salida:   ninguna directa; escribe el resultado en pantalla
+#           y en data/output/final_result.txt
+# Registros persistentes usados en todo el flujo principal:
+#   $s0 = descriptor de archivo de entrada
+#   $s1 = descriptor de archivo de salida
+#   $s2 = puntero al caracter actual del buffer de entrada
+#   $s3 = checksum acumulado
+#   $s4 = posicion (contador de alertas procesadas)
+#   $s5 = flag: 1 mientras seguimos en la linea de encabezado
+# ------------------------------------------------------------
 main:
     li   $v0, 13
     la   $a0, ruta_entrada
@@ -55,6 +74,14 @@ main:
     li   $s4, 0
     li   $s5, 1
 
+# ------------------------------------------------------------
+# Bloque: siguiente_linea / copiar_caracteres
+# Descripcion: copia caracter por caracter desde el buffer de
+#              entrada hacia linea_actual, hasta encontrar un
+#              salto de linea o el final del texto. Ignora '\r'
+#              para soportar archivos con saltos de linea estilo
+#              Windows (CRLF).
+# ------------------------------------------------------------
 siguiente_linea:
     la   $t4, linea_actual
     move $t5, $t4
@@ -83,6 +110,13 @@ fin_de_texto:
     sb   $zero, 0($t4)
     beq  $t5, $t4, terminar_lectura
 
+# ------------------------------------------------------------
+# Bloque: procesar_linea / no_es_encabezado
+# Descripcion: descarta la primera linea (encabezado TIPO_ALERTA)
+#              sin procesarla, y para las siguientes, identifica
+#              a que tipo de alerta corresponde comparando contra
+#              las 4 cadenas conocidas.
+# ------------------------------------------------------------
 procesar_linea:
     beqz $s5, no_es_encabezado
     li   $s5, 0
@@ -128,15 +162,26 @@ es_viento:
 es_bateria:
     li   $t8, 40
 
+# ------------------------------------------------------------
+# Bloque: acumular
+# Descripcion: aplica la formula del checksum sobre el valor
+#              de la alerta identificada y la posicion actual.
+# ------------------------------------------------------------
 acumular:
-    add  $s3, $s3, $t8
-    xor  $s3, $s3, $s4
+    add  $s3, $s3, $t8            # checksum = checksum + valor
+    xor  $s3, $s3, $s4            # checksum = checksum XOR posicion
 
 verificar_fin_archivo:
     lb   $t9, 0($s2)
     beqz $t9, terminar_lectura
     j    siguiente_linea
 
+# ------------------------------------------------------------
+# Bloque: terminar_lectura
+# Descripcion: muestra el checksum final en pantalla, lo
+#              convierte a texto, y lo escribe en
+#              data/output/final_result.txt.
+# ------------------------------------------------------------
 terminar_lectura:
     li   $v0, 4
     la   $a0, msg_checksum
@@ -193,6 +238,14 @@ salir:
     syscall
 
 
+# ------------------------------------------------------------
+# Rutina: strcmp
+# Descripcion: compara dos strings terminados en '\0', caracter
+#              por caracter, para identificar el tipo de alerta.
+# Entrada:  $a0 = direccion del primer string
+#           $a1 = direccion del segundo string
+# Salida:   $v0 = 0 si son iguales, distinto de 0 si son diferentes
+# ------------------------------------------------------------
 strcmp:
     lb   $t0, 0($a0)
     lb   $t1, 0($a1)
@@ -209,6 +262,16 @@ strcmp_igual:
     jr   $ra
 
 
+# ------------------------------------------------------------
+# Rutina: itoa
+# Descripcion: convierte un entero no negativo a su
+#              representacion en texto decimal, para poder
+#              escribirlo como caracteres en final_result.txt.
+# Entrada:  $a0 = direccion de memoria donde escribir el texto
+#           $a1 = numero entero a convertir
+# Salida:   ninguna en registros; escribe el resultado en la
+#           direccion indicada por $a0, terminado en '\0'
+# ------------------------------------------------------------
 itoa:
     la   $t1, itoa_temp
     li   $t0, 10

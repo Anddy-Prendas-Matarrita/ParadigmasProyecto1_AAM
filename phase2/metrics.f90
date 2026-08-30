@@ -1,3 +1,10 @@
+!> @brief Etapa 2 del pipeline PolyFlow (Fortran) - Calculo de metricas.
+!!
+!! Lee norm_data.csv (generado por BASIC-256), calcula 7 metricas
+!! globales sobre todo el dataset, y escribe el resultado en formato
+!! clave-valor a data/middle/metrics.csv para que lo consuma Java.
+!!
+!! Ver docs/contracts.md para el formato exacto de ambos archivos.
 program metrics_stage
     implicit none
 
@@ -19,13 +26,11 @@ program metrics_stage
     end if
 
     if (io_status /= 0) then
-        print *, "Error: No se pudo abrir norm_data.csv. Revisa si BASIC-256 genero el archivo."
-        stop
+        print *, "Error: No se pudo abrir norm_data.csv. Revisar si basic genero el archivo"
+        stop 1
     end if
 
-    ! norm_data.csv NO tiene encabezado (ver contracts.md) - no se descarta ninguna linea
-
-    ! --- contar registros validos (ignorando lineas en blanco) ---
+    !contar registros validos
     do
         read(10, '(A)', iostat=io_status) line_buffer
         if (io_status /= 0) exit
@@ -34,18 +39,18 @@ program metrics_stage
     end do
 
     if (record_count == 0) then
-        print *, "Advertencia: El archivo esta vacio o no contiene datos validos."
+        print *, "Advertencia: El archivo esta vacio o no contiene datos validos"
         close(10)
-        stop
+        stop 1
     end if
 
-    ! --- reservar espacio para guardar los 4 valores numericos por fila ---
+    ! reservar espacio para guardar los 4 valores numericos por fila
     allocate(temperatura(record_count))
     allocate(precipitacion(record_count))
     allocate(viento(record_count))
     allocate(bateria(record_count))
 
-    ! --- volver al inicio y leer los valores reales ---
+    !volver al inicio y leer los valores reales
     rewind(10)
 
     i = 0
@@ -92,7 +97,7 @@ program metrics_stage
 
     bateria_prom = promedio(bateria, record_count)
 
-    ! --- escribir metrics.csv en formato clave-valor (ver contracts.md) ---
+    !escribir metrics.csv en formato clave-valor
     open(unit=20, file='data/middle/metrics.csv', status='replace', action='write')
     write(20, '(A)') "Metric,Value"
     write(20, '(A,I0)')    "Total_Processed_Records,", record_count
@@ -109,7 +114,10 @@ program metrics_stage
 
 contains
 
-    !Calcula el promedio de un arreglo de valores
+    !> @brief Calcula el promedio aritmetico de un arreglo de valores.
+    !! @param[in] datos arreglo de valores reales a promediar
+    !! @param[in] n cantidad de elementos validos en el arreglo
+    !! @return el promedio de los n valores
     function promedio(datos, n) result(prom)
         real, intent(in) :: datos(:)
         integer, intent(in) :: n
@@ -124,7 +132,10 @@ contains
         prom = suma / n
     end function promedio
 
-    !Calcula la suma total de un arreglo de valores (acumulado)
+    !> @brief Calcula la suma acumulada (total) de un arreglo de valores.
+    !! @param[in] datos arreglo de valores reales a sumar
+    !! @param[in] n cantidad de elementos validos en el arreglo
+    !! @return la suma total de los n valores
     function total(datos, n) result(suma_total)
         real, intent(in) :: datos(:)
         integer, intent(in) :: n
@@ -137,7 +148,10 @@ contains
         end do
     end function total
 
-    !Encuentra el valor mas alto dentro de un arreglo
+    !> @brief Encuentra el valor mas alto dentro de un arreglo.
+    !! @param[in] datos arreglo de valores reales a evaluar
+    !! @param[in] n cantidad de elementos validos en el arreglo
+    !! @return el valor maximo encontrado entre los n elementos
     function valor_maximo(datos, n) result(vmax)
         real, intent(in) :: datos(:)
         integer, intent(in) :: n
@@ -152,7 +166,10 @@ contains
         end do
     end function valor_maximo
 
-    !Encuentra el valor mas bajo dentro de un arreglo
+    !> @brief Encuentra el valor mas bajo dentro de un arreglo.
+    !! @param[in] datos arreglo de valores reales a evaluar
+    !! @param[in] n cantidad de elementos validos en el arreglo
+    !! @return el valor minimo encontrado entre los n elementos
     function valor_minimo(datos, n) result(vmin)
         real, intent(in) :: datos(:)
         integer, intent(in) :: n

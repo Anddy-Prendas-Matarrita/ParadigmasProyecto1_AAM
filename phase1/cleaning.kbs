@@ -1,17 +1,41 @@
-# Abrir el archivo CSV
+# ============================================================
+# Etapa 1: Limpieza y validacion de datos (BASIC-256)
+#
+# Lee data/input/raw_data.csv, valida cada fila segun las reglas
+# de docs/contracts.md, y escribe solo las filas validas en
+# data/middle/norm_data.csv. No modifica ningun valor: solo filtra.
+#
+# Entrada:  data/input/raw_data.csv  (con encabezado, 6 columnas)
+# Salida:   data/middle/norm_data.csv (sin encabezado)
+#
+# IMPORTANTE: las rutas usan "../" porque BASIC-256 resuelve rutas
+# relativas segun la ubicacion del archivo .kbs, no segun desde
+# donde se invoque el comando (ver phase1/notes.md).
+# ============================================================
+
 open 1, "../data/input/raw_data.csv"
 open 2, "../data/middle/norm_data.csv"
 
 dim rowData$(1)
+
+# Descarta la primera linea (encabezado), no se valida como dato
 encabezado$ = readline(1)
+
 while not eof(1)
     validation = 1
     currentLine$ = readline(1)
     currentLine$ = RTrim(currentLine$)
 
+    # explode() separa la linea por comas en un arreglo de texto
     rowData$ = explode(currentLine$, ",")
 
-    if rowData$[?] <> 6 then
+    # ------------------------------------------------------
+    # Validacion de estructura: la fila debe tener exactamente
+    # 6 columnas (ID, ESTACION, TEMPERATURA, PRECIPITACION,
+    # VIENTO, BATERIA). Si trae menos o mas, se descarta entera
+    # antes de intentar acceder a indices que podrian no existir.
+    # ------------------------------------------------------
+    if length(rowData$) <> 6 then
         validation = 0
     end if
 
@@ -23,6 +47,11 @@ while not eof(1)
         windSpeed$ = rowData$[4]
         batteryLevel$ = rowData$[5]
 
+        # --------------------------------------------------
+        # Validacion de campos faltantes: ningun campo puede
+        # estar vacio, ya que un campo vacio invalida la fila
+        # completa (ver docs/contracts.md seccion 2).
+        # --------------------------------------------------
         if length(stationId$)=0 then
            validation = 0
         end if
@@ -42,7 +71,11 @@ while not eof(1)
            validation = 0
         end if
 
-        # NUEVO: verificar que los 4 campos numericos realmente sean numeros
+        # --------------------------------------------------
+        # Validacion de tipo: los 4 campos numericos deben ser
+        # realmente numeros antes de intentar convertirlos con
+        # float(), para evitar errores de conversion.
+        # --------------------------------------------------
         if validation = 1 then
             if not IsNumeric(temperature$) then
                validation = 0
@@ -64,6 +97,11 @@ while not eof(1)
             end if
         end if
 
+        # --------------------------------------------------
+        # Validacion de rangos numericos (ver contracts.md):
+        # TEMPERATURA en [0,45], PRECIPITACION y VIENTO >= 0,
+        # BATERIA en [0,100].
+        # --------------------------------------------------
         if validation = 1 then
             if float(temperature$) > 45 or float(temperature$) < 0 then
                validation = 0
@@ -89,6 +127,8 @@ while not eof(1)
         end if
     end if
 
+    # Si la fila paso todas las validaciones, se escribe SIN
+    # modificar (la linea original, tal como llego del CSV).
     if validation = 1 then
        writeline(2, currentLine$)
     end if
