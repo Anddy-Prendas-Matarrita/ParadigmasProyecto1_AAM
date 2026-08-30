@@ -8,65 +8,70 @@ encabezado$ = readline(1)
 while not eof(1)
     validation = 1
     currentLine$ = readline(1)
-    
-    # explode() divide la linea$ usando la "," y guarda los trozos en datos$
+    currentLine$ = RTrim(currentLine$)  
+
     rowData$ = explode(currentLine$, ",")
     
-    # Ahora puedes acceder a cada columna usando índices (empezando en 0)
-    stationId$ = rowData$[0]
-    stationName$ = rowData$[1]
-    temperature$ = rowData$[2]
-    precipitation$ = rowData$[3]
-    windSpeed$ = rowData$[4]
-    batteryLevel$ = rowData$[5]
-       
-    if length(stationId$)=0 then
-       validation = 0
-    end if
-    if length(stationName$)=0 then
-       validation = 0
-    end if
-    if length(temperature$)=0 then
-       validation = 0
-    end if
-    if length(precipitation$)=0 then
-       validation = 0
-    end if
-    if length(windSpeed$)=0 then
-       validation = 0
-    end if
-    if length(batteryLevel$)=0 then
-       validation = 0
+    # verificar que realmente hay 6 columnas
+    if rowData$[?] <> 6 then
+        validation = 0
     end if
     
     if validation = 1 then
-        if float(temperature$) > 45 or float(temperature$) < 0 then 
+        stationId$ = rowData$[0]
+        stationName$ = rowData$[1]
+        temperature$ = rowData$[2]
+        precipitation$ = rowData$[3]
+        windSpeed$ = rowData$[4]
+        batteryLevel$ = rowData$[5]
+        
+        if length(stationId$)=0 then
            validation = 0
         end if
-    end if
-    
-    if validation = 1 then
-        if float(precipitation$) < 0 then 
+        if length(stationName$)=0 then
            validation = 0
         end if
-    end if
-    
-    if validation = 1 then
-        if float(windSpeed$) < 0 then 
+        if length(temperature$)=0 then
            validation = 0
         end if
-    end if
-    
-    if validation = 1 then
-        if float(batteryLevel$) < 0 or float(batteryLevel$) > 100 then 
+        if length(precipitation$)=0 then
            validation = 0
+        end if
+        if length(windSpeed$)=0 then
+           validation = 0
+        end if
+        if length(batteryLevel$)=0 then
+           validation = 0
+        end if
+        
+        if validation = 1 then
+            if float(temperature$) > 45 or float(temperature$) < 0 then 
+               validation = 0
+            end if
+        end if
+        
+        if validation = 1 then
+            if float(precipitation$) < 0 then 
+               validation = 0
+            end if
+        end if
+        
+        if validation = 1 then
+            if float(windSpeed$) < 0 then 
+               validation = 0
+            end if
+        end if
+        
+        if validation = 1 then
+            if float(batteryLevel$) < 0 or float(batteryLevel$) > 100 then 
+               validation = 0
+            end if
         end if
     end if
     
     if validation = 1 then
        writeline(2, currentLine$)
     end if
-       
 end while
 
 close 1
