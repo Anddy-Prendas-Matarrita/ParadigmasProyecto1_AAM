@@ -10,9 +10,9 @@ echo "===== INICIANDO PIPELINE POLYFLOW ====="
 
 # ---------- Etapa 1: BASIC-256 ----------
 echo "[BASIC-256] Procesando datos..."
+mkdir -p data/middle
 basic256.exe -s phase1/cleaning.kbs
 echo "[BASIC-256] OK"
-
 # ---------- Etapa 2: Fortran ----------
 echo "[FORTRAN] Calculando metricas..."
 gfortran phase2/metrics.f90 -o phase2/metrics.exe
@@ -27,7 +27,7 @@ echo "[JAVA] OK"
 
 # ---------- Etapa 4: MIPS ----------
 echo "[MIPS] Calculando firma..."
-# Ajustar esta linea segun el simulador que use su equipo (ejemplo con MARS):
+mkdir -p data/output
 java -jar Mars.jar nc phase4/checksum.asm
 echo "[MIPS] OK"
 
