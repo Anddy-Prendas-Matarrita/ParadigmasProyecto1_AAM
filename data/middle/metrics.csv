@@ -1,9 +1,9 @@
 Metric,Value
-Total_Processed_Records,4
-Total_Precipitation,19.00
-Average_Temperature,27.25
-Max_Temperature,45.00
-Min_Temperature,.00
-Average_Wind_Speed,8.25
-Max_Wind_Speed,18.00
-Average_Battery_Level,68.00
+Total_Processed_Records,3
+Total_Precipitation,35.00
+Average_Temperature,27.67
+Max_Temperature,33.00
+Min_Temperature,19.00
+Average_Wind_Speed,18.33
+Max_Wind_Speed,30.00
+Average_Battery_Level,62.33
