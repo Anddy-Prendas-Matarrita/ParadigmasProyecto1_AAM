@@ -2,21 +2,19 @@
 open 1, "../data/input/raw_data.csv"
 open 2, "../data/middle/norm_data.csv"
 
-# Definir un arreglo dinámico de texto para almacenar las columnas de cada línea
 dim rowData$(1)
 encabezado$ = readline(1)
 while not eof(1)
     validation = 1
     currentLine$ = readline(1)
-    currentLine$ = RTrim(currentLine$)   # NUEVO: quita \r y espacios al final de la linea
+    currentLine$ = RTrim(currentLine$)
 
     rowData$ = explode(currentLine$, ",")
-    
-    # verificar que realmente hay 6 columnas
+
     if rowData$[?] <> 6 then
         validation = 0
     end if
-    
+
     if validation = 1 then
         stationId$ = rowData$[0]
         stationName$ = rowData$[1]
@@ -24,7 +22,7 @@ while not eof(1)
         precipitation$ = rowData$[3]
         windSpeed$ = rowData$[4]
         batteryLevel$ = rowData$[5]
-        
+
         if length(stationId$)=0 then
            validation = 0
         end if
@@ -43,32 +41,54 @@ while not eof(1)
         if length(batteryLevel$)=0 then
            validation = 0
         end if
-        
+
+        # NUEVO: verificar que los 4 campos numericos realmente sean numeros
         if validation = 1 then
-            if float(temperature$) > 45 or float(temperature$) < 0 then 
+            if not IsNumeric(temperature$) then
                validation = 0
             end if
         end if
-        
         if validation = 1 then
-            if float(precipitation$) < 0 then 
+            if not IsNumeric(precipitation$) then
                validation = 0
             end if
         end if
-        
         if validation = 1 then
-            if float(windSpeed$) < 0 then 
+            if not IsNumeric(windSpeed$) then
                validation = 0
             end if
         end if
-        
         if validation = 1 then
-            if float(batteryLevel$) < 0 or float(batteryLevel$) > 100 then 
+            if not IsNumeric(batteryLevel$) then
+               validation = 0
+            end if
+        end if
+
+        if validation = 1 then
+            if float(temperature$) > 45 or float(temperature$) < 0 then
+               validation = 0
+            end if
+        end if
+
+        if validation = 1 then
+            if float(precipitation$) < 0 then
+               validation = 0
+            end if
+        end if
+
+        if validation = 1 then
+            if float(windSpeed$) < 0 then
+               validation = 0
+            end if
+        end if
+
+        if validation = 1 then
+            if float(batteryLevel$) < 0 or float(batteryLevel$) > 100 then
                validation = 0
             end if
         end if
     end if
-    
+
     if validation = 1 then
        writeline(2, currentLine$)
     end if
