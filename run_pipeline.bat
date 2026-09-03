@@ -3,6 +3,7 @@ setlocal enabledelayedexpansion
 
 REM Asegura que el script corra desde su propia carpeta, sin importar
 REM desde donde se haya hecho doble clic o se haya invocado.
+set PATH=C:\msys64\mingw64\bin;C:\Program Files\Java\jdk-21\bin;%PATH%
 cd /d %~dp0
 
 set BASIC256="C:\Program Files\BASIC256\basic256.exe"
