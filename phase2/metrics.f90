@@ -83,7 +83,6 @@ program metrics_stage
     close(10)
 
     print *, "Informacion de BASIC-256 leida correctamente."
-    print *, "Total de registros recibidos: ", record_count
 
     ! --- calculos ---
     temp_prom = promedio(temperatura, record_count)
@@ -109,8 +108,6 @@ program metrics_stage
     write(20, '(A,F0.2)')  "Max_Wind_Speed,", viento_max
     write(20, '(A,F0.2)')  "Average_Battery_Level,", bateria_prom
     close(20)
-
-    print *, "Resultados guardados en metrics.csv"
 
 contains
 

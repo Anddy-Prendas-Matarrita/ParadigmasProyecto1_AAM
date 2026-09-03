@@ -40,7 +40,6 @@ public class RuleParser {
                 if (regla != null) {
                     reglas.add(regla);
                 } else {
-                    System.out.println("Linea invalida ignorada: " + linea);
                 }
             }
         }

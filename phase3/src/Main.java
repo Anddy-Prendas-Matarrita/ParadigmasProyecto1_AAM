@@ -35,13 +35,11 @@ public class Main {
 
             RuleParser parser = new RuleParser();
             List<Rule> reglas = parser.parsearArchivo(rutaReglas);
-            System.out.println("Reglas cargadas: " + reglas.size());
 
             List<String> alertasGeneradas = evaluarReglas(metricas, reglas);
             escribirAlertas(rutaAlertas, alertasGeneradas);
 
-            System.out.println("Alertas generadas: " + alertasGeneradas.size());
-            System.out.println("Archivo alerts.csv escrito correctamente.");
+            System.out.println("Alertas generadas ");
 
         } catch (IOException e) {
             System.out.println("Error al procesar los archivos: " + e.getMessage());
