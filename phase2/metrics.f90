@@ -4,33 +4,26 @@ program metrics_stage
     character(len=250) :: line_buffer
     real, allocatable :: temperatura(:), precipitacion(:), viento(:), bateria(:)
     real :: temp_prom, temp_max, temp_min, precip_total, viento_prom, viento_max, bateria_prom
-
     record_count = 0
-
-    open(unit=10, file='C:/Users/alenc/OneDrive/Escritorio/ParadigmasProyecto1_AAM/data/middle/norm_data.csv', status='old', action='read', form='formatted', iostat=io_status)
-
+    open(unit=10, file='data/middle/norm_data.csv', status='old', action='read', form='formatted', iostat=io_status)
     if (io_status /= 0) then
         write(*,*) "Error: No se pudo abrir norm_data.csv"
         stop 1
     end if
-
     do
         read(10, '(A)', iostat=io_status) line_buffer
         if (io_status /= 0) exit
         if (len_trim(adjustl(line_buffer)) == 0) cycle
         record_count = record_count + 1
     end do
-
     if (record_count == 0) then
         write(*,*) "Archivo vacio"
         close(10)
         stop 1
     end if
-
     allocate(temperatura(record_count), precipitacion(record_count), viento(record_count), bateria(record_count))
     rewind(10)
     i = 0
-
     do while (i < record_count)
         read(10, '(A)', iostat=io_status) line_buffer
         if (io_status /= 0) exit
@@ -53,9 +46,7 @@ program metrics_stage
         end block
     end do
     close(10)
-
     write(*,*) "Datos leidos:", record_count, "registros"
-
     temp_prom    = sum(temperatura)  / record_count
     temp_max     = maxval(temperatura)
     temp_min     = minval(temperatura)
@@ -63,13 +54,11 @@ program metrics_stage
     viento_prom  = sum(viento)       / record_count
     viento_max   = maxval(viento)
     bateria_prom = sum(bateria)      / record_count
-
-    open(unit=20, file='C:/Users/alenc/OneDrive/Escritorio/ParadigmasProyecto1_AAM/data/middle/metrics.csv', status='replace', action='write', iostat=io_status)
+    open(unit=20, file='data/middle/metrics.csv', status='replace', action='write', iostat=io_status)
     if (io_status /= 0) then
         write(*,*) "Error escribiendo metrics.csv"
         stop 1
     end if
-
     write(20,'(A)') "Metric,Value"
     write(20,'(A,I0)')   "Total_Processed_Records,", record_count
     write(20,'(A,F0.2)') "Total_Precipitation,",     precip_total
@@ -80,7 +69,5 @@ program metrics_stage
     write(20,'(A,F0.2)') "Max_Wind_Speed,",          viento_max
     write(20,'(A,F0.2)') "Average_Battery_Level,",   bateria_prom
     close(20)
-
     write(*,*) "metrics.csv generado OK"
-
 end program metrics_stage
