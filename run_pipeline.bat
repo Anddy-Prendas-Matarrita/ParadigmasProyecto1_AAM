@@ -6,6 +6,17 @@ REM desde donde se haya hecho doble clic o se haya invocado.
 set PATH=C:\msys64\mingw64\bin;C:\Program Files\Java\jdk-21\bin;%PATH%
 cd /d %~dp0
 
+REM Prepara data\input, data\middle y data\output (crea las que
+REM falten) y limpia archivos generados en corridas anteriores para
+REM que no se mezclen con los de esta corrida.
+REM data\input NO se toca: ahi va el raw_data.csv de esta corrida.
+if not exist "data\input" mkdir "data\input"
+if not exist "data\middle" mkdir "data\middle"
+if not exist "data\output" mkdir "data\output"
+
+del /q "data\middle\*" 2>nul
+del /q "data\output\*" 2>nul
+
 set BASIC256="C:\Program Files\BASIC256\basic256.exe"
 
 echo ===== INICIANDO PIPELINE POLYFLOW =====
